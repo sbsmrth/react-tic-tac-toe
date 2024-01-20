@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const initialGameBoard = [
   [null, null, null],
@@ -6,19 +6,15 @@ const initialGameBoard = [
   [null, null, null],
 ];
 
-export const GameBoard = () => {
-  const [gameBoard, setGameBoard] = useState(initialGameBoard);
+const GameBoard = ({ onSelectSquare, turns }) => {
+  let gameBoard = initialGameBoard;
 
-  const handleSelectSquare = (rowIndex, colIndex) => {
-    setGameBoard(prevGameBoard => {
-      const prevGameBoardCopy = [
-        ...prevGameBoard.map(innerArr => [...innerArr]),
-      ];
-      prevGameBoardCopy[rowIndex][colIndex] = 'X';
+  turns.forEach(turn => {
+    const { square, player } = turn;
+    const { row, col } = square;
 
-      return prevGameBoardCopy;
-    });
-  };
+    gameBoard[row][col] = player;
+  });
 
   return (
     <ol id="game-board">
@@ -27,7 +23,10 @@ export const GameBoard = () => {
           <ol>
             {row.map((playerSymbol, colIndex) => (
               <li key={colIndex}>
-                <button onClick={() => handleSelectSquare(rowIndex, colIndex)}>
+                <button
+                  onClick={() => onSelectSquare(rowIndex, colIndex)}
+                  disabled={gameBoard[rowIndex][colIndex]}
+                >
                   {playerSymbol}
                 </button>
               </li>
@@ -38,3 +37,10 @@ export const GameBoard = () => {
     </ol>
   );
 };
+
+GameBoard.propTypes = {
+  onSelectSquare: PropTypes.func.isRequired,
+  turns: PropTypes.array.isRequired,
+};
+
+export { GameBoard };
